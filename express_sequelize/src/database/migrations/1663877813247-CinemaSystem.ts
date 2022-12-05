@@ -31,8 +31,24 @@ export default {
    * As a cinema owner I don't want to configure the seating for every show
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  up: (queryInterface: QueryInterface): Promise<void> => {
-    throw new Error('TODO: implement migration in task 4');
+  up: async (queryInterface: QueryInterface): Promise<void> => {
+
+    // movie table consist of movie metadata like name. genere etc..
+		await queryInterface.createTable(`movie`,{
+
+    });
+
+    await queryInterface.createTable(`show_timings`,{
+
+    });
+
+    await queryInterface.createTable(`show_pricing`,{
+
+    });
+
+    await queryInterface.createTable(`seats`,{
+
+    });
   },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
