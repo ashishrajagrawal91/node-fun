@@ -31,28 +31,177 @@ export default {
    * As a cinema owner I don't want to configure the seating for every show
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  up: async (queryInterface: QueryInterface): Promise<void> => {
-
-    // movie table consist of movie metadata like name. genere etc..
-		await queryInterface.createTable(`movie`,{
-
+  up: async (queryInterface: QueryInterface, dataTypes: any): Promise<void> => {
+    
+    // USER table
+		await queryInterface.createTable(`USER`,{
+      ID : {
+        type: dataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
+      },
+      FIRST_NAME : {
+        type: dataTypes.STRING(255),
+        allowNull: false,
+      },
+      LAST_NAME : {
+        type: dataTypes.STRING(255),
+        allowNull: true,
+      },
+      PHONE_NUMBER : {
+        type: dataTypes.STRING(10),
+        allowNull: false,
+      },
     });
 
-    await queryInterface.createTable(`show_timings`,{
-
+    // SHOWROOM table
+		await queryInterface.createTable(`SHOWROOM`,{
+      ID : {
+        type: dataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
+      },
+      NO_OF_SEATS_VIP : {
+        type: dataTypes.INTEGER,
+        allowNull: false,
+      },
+      NO_OF_SEATS_COUPLE : {
+        type: dataTypes.INTEGER,
+        allowNull: false,
+      },
     });
 
-    await queryInterface.createTable(`show_pricing`,{
-
+    // MOVIE table
+		await queryInterface.createTable(`MOVIE`,{
+      ID : {
+        type: dataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
+      },
+      NAME : {
+        type: dataTypes.STRING(255),
+        allowNull: false,
+      },
+      LANGUAGE : {
+        type: dataTypes.STRING(255),
+        allowNull: false,
+      },
+      GENERE : {
+        type: dataTypes.STRING(255),
+        allowNull: false,
+      },
+    });
+    
+    // SHOW table
+    await queryInterface.createTable(`SHOW`,{
+      Index : {
+        type: dataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
+      },
+      SHOW_TIME : {
+        type: dataTypes.TIME,
+        allowNull: false,
+      },
+      SHOW_DATE : {
+        type: dataTypes.DATEONLY,
+        allowNull: false,
+      },
+      SEATS_REMAINING_VIP : {
+        type: dataTypes.INTEGER,
+        allowNull: false,
+      },
+      SEATS_REMAINING_COUPLE : {
+        type: dataTypes.INTEGER,
+        allowNull: false,
+      },
+      CLASS_COST_VIP : {
+        type: dataTypes.INTEGER,
+        allowNull: false,
+      },
+      CLASS_COST_COUPLE : {
+        type: dataTypes.INTEGER,
+        allowNull: false,
+      },
+      SHOWROOM_ID : {
+        type: dataTypes.INTEGER,
+        allowNull: false,
+      },
+      MOVIE_ID : {
+        type: dataTypes.INTEGER,
+        allowNull: false,
+      },
     });
 
-    await queryInterface.createTable(`seats`,{
-
+    // BOOKING table
+    await queryInterface.createTable(`BOOKING`,{
+      ID : {
+        type: dataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
+      },
+      NO_OF_TICKETS : {
+        type: dataTypes.INTEGER,
+        allowNull: false,
+      },
+      TOTAL_COST : {
+        type: dataTypes.INTEGER,
+        allowNull: false,
+      },
+      USER_ID : {
+        type: dataTypes.INTEGER,
+        allowNull: false,
+      },
+      SHOWROOM_ID : {
+        type: dataTypes.INTEGER,
+        allowNull: false,
+      },
+      SEAT_NUMBERS : {
+        type: dataTypes.ARRAY(dataTypes.INTEGER),
+        allowNull: false,
+      },
     });
+
+    // TICKET table
+    await queryInterface.createTable(`TICKET`,{
+      ID : {
+        type: dataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
+      },
+      BOOKING_ID : {
+        type: dataTypes.INTEGER,
+        allowNull: false,
+      },
+      CLASS : {
+        type: dataTypes.STRING(3),
+        allowNull: false,
+      },
+      PRICE : {
+        type: dataTypes.INTEGER,
+        allowNull: false,
+      },
+    });
+
+    // Foreign Key Contraint
+    await Promise.all([
+      queryInterface.sequelize.query("ALTER SHOW ADD CONSTRAINT FK_SHOWROOM_ID FOREIGN KEY (SHOWROOM_ID) REFERENCES SHOWROOM(ID) ON DELETE CASCADE;"),
+      queryInterface.sequelize.query("ALTER SHOW ADD CONSTRAINT FK_MOVIE_ID FOREIGN KEY (MOVIE_ID) REFERENCES MOVIE(ID) ON DELETE CASCADE;"),
+      queryInterface.sequelize.query("ALTER BOOKING ADD CONSTRAINT FK_USER_ID FOREIGN KEY (USER_ID) REFERENCES USER(ID) ON DELETE CASCADE;"),
+      queryInterface.sequelize.query("ALTER BOOKING ADD CONSTRAINT FK_SHOWROOM_ID FOREIGN KEY (SHOWROOM_ID) REFERENCES SHOWROOM(ID) ON DELETE CASCADE;"),
+      queryInterface.sequelize.query("ALTER TICKET ADD CONSTRAINT FK_BOOKING_ID FOREIGN KEY (BOOKING_ID) REFERENCES BOOKING(ID) ON DELETE CASCADE;"),
+    ]);
   },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  down: (queryInterface: QueryInterface) => {
-    // do nothing
+  down: async (queryInterface: QueryInterface) => {
+    await Promise.all([
+      queryInterface.dropTable("USER"),
+      queryInterface.dropTable("SHOWROOM"),
+      queryInterface.dropTable("MOVIE"),
+      queryInterface.dropTable("SHOW"),
+      queryInterface.dropTable("BOOKING"),
+      queryInterface.dropTable("TICKET"),
+    ]);
   },
 };
